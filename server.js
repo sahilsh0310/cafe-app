@@ -23,11 +23,25 @@ const io = new Server(httpServer, {
 });
 
 let orders = [];
+let isInitialized = false;
 
 io.on('connection', (socket) => {
   console.log('Device connected:', socket.id);
 
-  socket.emit('init-orders', orders);
+  if (isInitialized) {
+    socket.emit('init-orders', orders);
+  } else {
+    // Ask the first connected client to provide its orders to seed the server
+    socket.emit('request-local-orders');
+  }
+
+  socket.on('sync-local-orders', (localOrders) => {
+    if (!isInitialized) {
+      orders = localOrders || [];
+      isInitialized = true;
+      socket.broadcast.emit('init-orders', orders);
+    }
+  });
 
   socket.on('new-order', (order) => {
     orders.unshift(order);

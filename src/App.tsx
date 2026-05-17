@@ -112,11 +112,15 @@ export default function App() {
     const savedOrders = localStorage.getItem('cafe_orders');
     if (savedOrders) setOrders(JSON.parse(savedOrders));
 
+    socket.on('request-local-orders', () => {
+       const local = JSON.parse(localStorage.getItem('cafe_orders') || '[]');
+       socket.emit('sync-local-orders', local);
+    });
+
     socket.on('init-orders', (serverOrders: Order[]) => {
-      if(serverOrders && serverOrders.length > 0) {
-        setOrders(serverOrders);
-        localStorage.setItem('cafe_orders', JSON.stringify(serverOrders));
-      }
+      // The server is the single source of truth for the session
+      setOrders(serverOrders);
+      localStorage.setItem('cafe_orders', JSON.stringify(serverOrders));
     });
 
     socket.on('order-added', (newOrder: Order) => {
@@ -154,6 +158,7 @@ export default function App() {
     });
 
     return () => {
+      socket.off('request-local-orders');
       socket.off('init-orders');
       socket.off('order-added');
       socket.off('order-updated');
