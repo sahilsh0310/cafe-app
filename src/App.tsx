@@ -23,7 +23,8 @@ import { QRCodeSVG } from 'qrcode.react';
 import { Scanner } from '@yudiel/react-qr-scanner';
 import { io } from 'socket.io-client';
 
-const socket = io(`http://${window.location.hostname}:3001`);
+const socketURL = import.meta.env.DEV ? `http://${window.location.hostname}:3001` : undefined;
+const socket = io(socketURL);
 
 // --- Types ---
 interface MenuItem {
