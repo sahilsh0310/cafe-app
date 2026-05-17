@@ -3,7 +3,6 @@ import {
   Search, 
   Plus, 
   Minus, 
-  ChevronRight, 
   Coffee, 
   Utensils, 
   Star,
@@ -50,14 +49,14 @@ interface Order {
 
 // --- Mock Data ---
 const MENU_ITEMS: MenuItem[] = [
-  { id: '1', name: 'Velvet Espresso', description: 'Double-shot of our signature house blend with a creamy, honey-like crema.', price: 5.50, category: 'Coffee', image: 'https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=600&h=600&fit=crop', rating: 4.9 },
-  { id: '2', name: 'Gold Macchiato', description: 'Silky steamed milk marked with espresso and a drizzle of artisanal caramel.', price: 6.75, category: 'Coffee', image: 'https://images.unsplash.com/photo-1485808191679-5f6333bb210a?w=600&h=600&fit=crop', rating: 4.9 },
-  { id: '9', name: 'Emerald Matcha', description: 'Ceremonial grade Uji matcha whisked with creamy oat milk and local honey.', price: 7.50, category: 'Tea', image: 'https://images.unsplash.com/photo-1515823064-d6e0c04616a7?w=600&h=600&fit=crop', rating: 4.8 },
-  { id: '3', name: 'Artisan Avocado', description: 'Heirloom tomatoes, radical radish, and whipped feta on toasted sourdough.', price: 14.50, category: 'Brunch', image: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?w=600&h=600&fit=crop', rating: 4.7 },
-  { id: '5', name: 'Truffle Croissant', description: 'House-made buttery croissant filled with black truffle infused Gruyère.', price: 10.50, category: 'Bakery', image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=600&h=600&fit=crop', rating: 4.6 },
-  { id: '12', name: 'Midnight Lava', description: '70% Dark chocolate fondant with a molten core and gold leaf finish.', price: 12.00, category: 'Desserts', image: 'https://images.unsplash.com/photo-1624353365286-3f8d62daad51?w=600&h=600&fit=crop', rating: 4.9 },
-  { id: '6', name: 'Burrata Pizza', description: 'Creamy burrata, prosciutto di Parma, and aged balsamic glaze.', price: 18.00, category: 'Mains', image: 'https://images.unsplash.com/photo-1574129624542-46c230756539?w=600&h=600&fit=crop', rating: 4.9 },
-  { id: '11', name: 'Aurelia Bowl', description: 'Quinoa, roasted seasonal squash, spiced chickpeas, and tahini drizzle.', price: 16.50, category: 'Mains', image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&h=600&fit=crop', rating: 4.5 },
+  { id: '1', name: 'Velvet Espresso', description: 'Double-shot of our signature house blend with a creamy, honey-like crema.', price: 450, category: 'Coffee', image: 'https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=600&h=600&fit=crop', rating: 4.9 },
+  { id: '2', name: 'Gold Macchiato', description: 'Silky steamed milk marked with espresso and a drizzle of artisanal caramel.', price: 540, category: 'Coffee', image: 'https://images.unsplash.com/photo-1485808191679-5f6333bb210a?w=600&h=600&fit=crop', rating: 4.9 },
+  { id: '9', name: 'Emerald Matcha', description: 'Ceremonial grade Uji matcha whisked with creamy oat milk and local honey.', price: 600, category: 'Tea', image: 'https://images.unsplash.com/photo-1515823064-d6e0c04616a7?w=600&h=600&fit=crop', rating: 4.8 },
+  { id: '3', name: 'Artisan Avocado', description: 'Heirloom tomatoes, radical radish, and whipped feta on toasted sourdough.', price: 1150, category: 'Brunch', image: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?w=600&h=600&fit=crop', rating: 4.7 },
+  { id: '5', name: 'Truffle Croissant', description: 'House-made buttery croissant filled with black truffle infused Gruyère.', price: 840, category: 'Bakery', image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=600&h=600&fit=crop', rating: 4.6 },
+  { id: '12', name: 'Midnight Lava', description: '70% Dark chocolate fondant with a molten core and gold leaf finish.', price: 960, category: 'Desserts', image: 'https://images.unsplash.com/photo-1624353365286-3f8d62daad51?w=600&h=600&fit=crop', rating: 4.9 },
+  { id: '6', name: 'Burrata Pizza', description: 'Creamy burrata, prosciutto di Parma, and aged balsamic glaze.', price: 1450, category: 'Mains', image: 'https://images.unsplash.com/photo-1574129624542-46c230756539?w=600&h=600&fit=crop', rating: 4.9 },
+  { id: '11', name: 'Aurelia Bowl', description: 'Quinoa, roasted seasonal squash, spiced chickpeas, and tahini drizzle.', price: 1320, category: 'Mains', image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&h=600&fit=crop', rating: 4.5 },
 ];
 
 const CATEGORIES = ['All', 'Coffee', 'Tea', 'Brunch', 'Bakery', 'Mains', 'Desserts'];
@@ -74,6 +73,8 @@ export default function App() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [paymentMethod, setPaymentMethod] = useState<'cash' | 'online' | null>(null);
   const [adminTab, setAdminTab] = useState<'manager' | 'kitchen' | 'waiter' | 'tables'>('manager');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [pin, setPin] = useState('');
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -154,6 +155,19 @@ export default function App() {
 
   const cartTotal = useMemo(() => cart.reduce((sum, item) => sum + (item.price * item.quantity), 0), [cart]);
 
+  const showNotification = (title: string, body: string) => {
+    if (!("Notification" in window)) return;
+    if (Notification.permission === "granted") {
+      new Notification(title, { body, icon: '/vite.svg' });
+    } else if (Notification.permission !== "denied") {
+      Notification.requestPermission().then(permission => {
+        if (permission === "granted") {
+          new Notification(title, { body, icon: '/vite.svg' });
+        }
+      });
+    }
+  };
+
   const placeOrder = () => {
     if (!paymentMethod) return;
     const newOrder: Order & { paymentMethod: string } = {
@@ -170,11 +184,77 @@ export default function App() {
     setCart([]);
     setPaymentMethod(null);
     setView('order-success');
+    
+    showNotification("New Order Received!", `Table ${newOrder.tableNumber} just ordered ${newOrder.items.length} items (₹${newOrder.total}).`);
   };
 
   const updateOrderStatus = (orderId: string, newStatus: Order['status']) => {
     const updatedOrders = orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o);
     saveOrders(updatedOrders);
+    
+    const order = updatedOrders.find(o => o.id === orderId);
+    if (order && newStatus === 'ready') {
+       showNotification("Order Ready!", `Order for Table ${order.tableNumber} is ready for delivery.`);
+    }
+  };
+
+  const downloadCSV = () => {
+    const headers = "Order ID,Table,Items,Total (INR),Status,Time\n";
+    const rows = orders.map(o => {
+       const itemsStr = o.items.map(i => `${i.quantity}x ${i.name}`).join(' | ');
+       const time = new Date(o.timestamp).toLocaleString();
+       return `${o.id},${o.tableNumber},"${itemsStr}",${o.total},${o.status},"${time}"`;
+    }).join('\n');
+    
+    const blob = new Blob([headers + rows], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `cafe_orders_${new Date().toLocaleDateString()}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const printBill = (order: Order) => {
+    const printWindow = window.open('', '_blank');
+    if(!printWindow) return;
+    
+    const itemsHtml = order.items.map(i => `
+      <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+        <span>${i.quantity}x ${i.name}</span>
+        <span>Rs. ${i.price * i.quantity}</span>
+      </div>
+    `).join('');
+
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Bill - Table ${order.tableNumber}</title>
+          <style>
+            body { font-family: monospace; padding: 20px; max-width: 300px; margin: 0 auto; color: #000; }
+            .divider { border-bottom: 1px dashed #000; margin: 15px 0; }
+            .text-center { text-align: center; }
+            .font-bold { font-weight: bold; }
+          </style>
+        </head>
+        <body>
+          <div class="text-center font-bold" style="font-size: 1.5em; margin-bottom: 5px;">Aurelia Cafe</div>
+          <div class="text-center" style="margin-bottom: 15px;">Table: ${order.tableNumber} | Order: ${order.id}</div>
+          <div class="divider"></div>
+          ${itemsHtml}
+          <div class="divider"></div>
+          <div style="display: flex; justify-content: space-between;" class="font-bold">
+            <span>TOTAL</span>
+            <span>Rs. ${order.total}</span>
+          </div>
+          <div class="divider"></div>
+          <div class="text-center" style="margin-top: 20px;">Thank you for your visit!</div>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => { printWindow.print(); printWindow.close(); }, 250);
   };
 
   const toggleTheme = () => setTheme(prev => prev === 'light' ? 'dark' : 'light');
@@ -215,47 +295,55 @@ export default function App() {
             </nav>
 
             {/* Full Screen Scanner Hero */}
-            <section className="relative h-[100vh] w-full flex flex-col items-center justify-center bg-black overflow-hidden group">
-               {/* Background Image (visible when camera is off) */}
-               {!isCameraActive && (
-                 <>
-                   <img 
-                     src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=2047&auto=format&fit=crop" 
-                     alt="Aurelia Cafe" 
-                     className="absolute inset-0 w-full h-full object-cover opacity-60"
-                   />
-                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/30" />
-                 </>
-               )}
+            <section className="relative h-[100vh] w-full flex flex-col items-center justify-center bg-[var(--bg-primary)] overflow-hidden group">
+               <div className="grain"></div>
+               <div className="ambient-canvas"></div>
 
-               {isCameraActive ? (
-                  <div className="absolute inset-0">
-                     <Scanner 
-                        onScan={(result) => handleScan(result[0].rawValue)}
-                        styles={{ container: { width: '100%', height: '100%' } }}
-                        components={{ finder: true }}
-                     />
-                  </div>
-               ) : (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center cursor-pointer" onClick={() => setIsCameraActive(true)}>
-                     <div className="text-center mb-10 mt-10">
-                        <h2 className="font-serif text-5xl sm:text-6xl md:text-8xl leading-[1.0] text-white tracking-tighter mb-4 shadow-black drop-shadow-2xl">
-                          Aurelia Cafe
-                        </h2>
-                        <p className="font-serif text-lg md:text-2xl italic text-white/90">Scan to begin your experience.</p>
-                     </div>
-                     <div className="w-32 h-32 md:w-48 md:h-48 rounded-[32px] md:rounded-[40px] border border-white/40 flex flex-col items-center justify-center bg-white/10 backdrop-blur-xl hover:bg-white/20 hover:scale-110 transition-all shadow-[0_0_80px_rgba(255,255,255,0.15)] ring-1 ring-white/20">
-                       <QrCode className="w-10 h-10 md:w-16 md:h-16 text-white mb-2 md:mb-3 opacity-90" />
-                       <span className="text-white text-[10px] md:text-xs uppercase tracking-[0.3em] font-black">Tap to Scan</span>
-                     </div>
-                  </div>
-               )}
+               <header className="absolute top-24 md:top-32 text-center w-full z-30">
+                   <h1 className="font-serif font-bold text-2xl md:text-3xl uppercase tracking-[0.2em] text-[var(--secondary)] mb-2">Aurelia Cafe</h1>
+                   <p className="font-sans text-[10px] md:text-xs text-[var(--text-main)] opacity-60 tracking-widest uppercase">Position QR Within Frame</p>
+               </header>
 
-               {/* Scroll Indicator */}
-               <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center text-white/60 animate-bounce cursor-pointer z-10" onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}>
-                  <span className="text-[9px] uppercase tracking-widest mb-1 font-bold">Manual Entry</span>
-                  <ChevronDown size={16} />
+               <div className="scanner-viewport z-20">
+                  <div className="corner tl"></div>
+                  <div className="corner tr"></div>
+                  <div className="corner bl"></div>
+                  <div className="corner br"></div>
+                  
+                  {isCameraActive ? (
+                     <>
+                        <div className="scan-line"></div>
+                        <div className="absolute inset-0 z-10 bg-black">
+                           <Scanner 
+                              onScan={(result) => handleScan(result[0].rawValue)}
+                              styles={{ container: { width: '100%', height: '100%' } }}
+                              components={{ finder: false }}
+                           />
+                        </div>
+                     </>
+                  ) : (
+                     <div className="absolute inset-0 z-10 flex flex-col items-center justify-center cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors" onClick={() => setIsCameraActive(true)}>
+                        <QrCode className="w-12 h-12 text-[var(--secondary)] mb-4 opacity-80" />
+                        <span className="text-[10px] uppercase tracking-widest font-black text-[var(--text-main)]">Tap to Activate</span>
+                     </div>
+                  )}
                </div>
+
+               <div className="status-pill">
+                  <div className="status-dot"></div>
+                  <span className="font-mono text-[10px] md:text-[11px] tracking-widest uppercase text-[var(--text-main)]">
+                    {isCameraActive ? 'Aligning Sensors...' : 'Camera Standby'}
+                  </span>
+               </div>
+
+               <footer className="absolute bottom-16 md:bottom-24 flex gap-6 z-30">
+                  <div className="control-btn text-[var(--text-main)]" title="Toggle Flash" onClick={() => setIsCameraActive(!isCameraActive)}>
+                     <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current"><path d="M7 2v11h3v9l7-12h-4l4-8H7z"/></svg>
+                  </div>
+                  <div className="control-btn text-[var(--text-main)]" title="Manual Entry" onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}>
+                     <ChevronDown className="w-5 h-5" />
+                  </div>
+               </footer>
             </section>
 
             {/* Main Content Area */}
@@ -396,39 +484,37 @@ export default function App() {
                   />
                </div>
 
-               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
+               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
                   {filteredItems.map(item => (
                     <motion.div 
                       layout
                       key={item.id}
-                      className="group card overflow-hidden p-0 flex flex-col hover:shadow-[0_40px_80px_rgba(0,0,0,0.1)] transition-all duration-700 rounded-3xl"
+                      className="group card overflow-hidden p-0 flex flex-col hover:shadow-[0_40px_80px_rgba(0,0,0,0.15)] transition-all duration-700 rounded-2xl md:rounded-3xl aspect-square relative"
                     >
-                      <div className="relative h-64 md:h-80 overflow-hidden">
-                        <img 
-                          src={item.image} 
-                          alt={item.name} 
-                          className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-110" 
-                        />
-                        <div className="absolute top-4 right-4 glass px-3 py-1.5 md:px-4 md:py-2 rounded-full text-[9px] md:text-[10px] font-black uppercase flex items-center gap-1.5 md:gap-2">
-                           <Star size={10} className="md:w-3 md:h-3 text-[var(--secondary)] fill-current" /> {item.rating}
-                        </div>
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 hidden md:block" />
-                        <button 
-                          onClick={() => addToCart(item)}
-                          className="absolute bottom-6 right-6 w-12 h-12 md:bottom-8 md:right-8 md:w-16 md:h-16 bg-white text-[var(--primary)] rounded-full shadow-2xl flex items-center justify-center md:opacity-0 md:translate-y-6 md:group-hover:opacity-100 md:group-hover:translate-y-0 transition-all duration-500 hover:bg-[var(--secondary)] hover:text-white"
-                        >
-                          <Plus size={24} className="md:w-8 md:h-8" />
-                        </button>
+                      <img 
+                         src={item.image} 
+                         alt={item.name} 
+                         className="absolute inset-0 w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-110" 
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+                      
+                      <div className="absolute top-3 right-3 md:top-4 md:right-4 bg-black/40 backdrop-blur-md px-2 py-1 md:px-4 md:py-2 rounded-full text-[8px] md:text-[10px] font-black uppercase flex items-center gap-1 text-white/90 border border-white/10 shadow-lg">
+                         <Star size={8} className="md:w-3 md:h-3 text-[var(--secondary)] fill-current" /> {item.rating}
                       </div>
-                      <div className="p-6 md:p-10 flex-1 flex flex-col">
-                        <div className="flex justify-between items-baseline mb-3 md:mb-4">
-                           <h4 className="text-2xl md:text-3xl font-black font-serif italic tracking-tight">{item.name}</h4>
-                           <span className="text-lg md:text-xl font-black gold-gradient">${item.price.toFixed(2)}</span>
-                        </div>
-                        <p className="text-sm md:text-base text-[var(--text-muted)] font-medium leading-relaxed opacity-80 mb-6 md:mb-8">{item.description}</p>
-                        <div className="mt-auto flex items-center justify-between">
-                           <span className="text-[8px] md:text-[9px] uppercase tracking-[0.3em] font-black text-[var(--secondary)] px-3 py-1 md:px-4 md:py-1.5 bg-[var(--secondary)]/10 rounded-full">{item.category}</span>
-                           <button onClick={() => addToCart(item)} className="md:hidden font-black text-[9px] uppercase tracking-widest text-white bg-near-black px-4 py-2 rounded-full shadow-lg active:scale-95 transition-transform">Add</button>
+
+                      <div className="absolute top-3 left-3 md:top-4 md:left-4">
+                         <span className="text-[7px] md:text-[9px] uppercase tracking-[0.3em] font-black text-black px-2 py-1 md:px-4 md:py-1.5 bg-white/90 backdrop-blur-md rounded-full shadow-lg">{item.category}</span>
+                      </div>
+
+                      <div className="absolute inset-x-0 bottom-0 p-3 sm:p-4 md:p-6 flex flex-col z-10 text-white">
+                        <h4 className="text-sm sm:text-base md:text-2xl font-black font-serif italic tracking-tight leading-tight mb-1">{item.name}</h4>
+                        <p className="text-[8px] sm:text-[9px] md:text-xs text-white/70 font-medium leading-relaxed line-clamp-2 md:line-clamp-2 mb-3">{item.description}</p>
+                        
+                        <div className="flex items-center justify-between mt-auto">
+                           <span className="text-sm md:text-xl font-black gold-gradient drop-shadow-md">₹{item.price.toFixed(0)}</span>
+                           <button onClick={(e) => { e.stopPropagation(); addToCart(item); }} className="font-black text-[9px] md:text-[10px] uppercase tracking-widest text-[var(--primary)] bg-white px-3 py-1.5 md:px-5 md:py-2.5 rounded-full shadow-[0_10px_20px_rgba(0,0,0,0.2)] hover:bg-[var(--secondary)] hover:text-white hover:scale-105 active:scale-95 transition-all flex items-center gap-1">
+                             <Plus size={10} className="md:hidden" /> Add
+                           </button>
                         </div>
                       </div>
                     </motion.div>
@@ -469,7 +555,7 @@ export default function App() {
                          <img src={item.image} className="w-full sm:w-32 h-48 sm:h-32 object-cover rounded-2xl md:rounded-3xl shadow-md md:shadow-xl" />
                          <div className="flex-1 text-center sm:text-left w-full sm:w-auto">
                             <h5 className="text-xl md:text-2xl font-black font-serif italic mb-1 md:mb-2 tracking-tight">{item.name}</h5>
-                            <p className="text-lg md:text-xl text-[var(--secondary)] font-bold">${(item.price * item.quantity).toFixed(2)}</p>
+                            <p className="text-lg md:text-xl text-[var(--secondary)] font-bold">₹{(item.price * item.quantity).toFixed(0)}</p>
                          </div>
                          <div className="flex items-center gap-4 md:gap-6 bg-[var(--bg-secondary)] rounded-full px-4 py-2 md:px-6 md:py-3 border border-black/5 w-full sm:w-auto justify-between sm:justify-center">
                             <button onClick={() => removeFromCart(item.id)} className="p-2 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors"><Minus size={16} className="md:w-5 md:h-5" /></button>
@@ -487,7 +573,7 @@ export default function App() {
                   <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 md:gap-12">
                      <div className="flex items-center justify-between w-full md:w-auto md:block text-center md:text-left">
                         <span className="text-[10px] md:text-[11px] uppercase tracking-[0.4em] font-black text-[var(--text-muted)] mb-1 md:mb-3 block">Consolidated Total</span>
-                        <span className="text-4xl md:text-6xl font-black gold-gradient tracking-tighter">${cartTotal.toFixed(2)}</span>
+                        <span className="text-4xl md:text-6xl font-black gold-gradient tracking-tighter">₹{cartTotal.toFixed(0)}</span>
                      </div>
                      <button 
                         onClick={() => setView('checkout')}
@@ -546,7 +632,7 @@ export default function App() {
                      <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mb-6 md:mb-8 p-4 md:p-6 bg-gray-50 rounded-2xl flex items-center justify-center border border-gray-200">
                         <div className="text-center">
                            <QRCodeSVG value="upi://pay?pa=aurelia@bank" size={120} className="md:w-[150px] md:h-[150px] mx-auto mb-4" />
-                           <p className="text-xs md:text-sm font-bold text-gray-500 uppercase tracking-widest">Scan to Pay ${cartTotal.toFixed(2)}</p>
+                           <p className="text-xs md:text-sm font-bold text-gray-500 uppercase tracking-widest">Scan to Pay ₹{cartTotal.toFixed(0)}</p>
                         </div>
                      </motion.div>
                    )}
@@ -598,20 +684,46 @@ export default function App() {
             animate={{ opacity: 1 }}
             className="p-5 md:p-10 lg:p-20 max-w-7xl mx-auto"
           >
-            <div className="flex flex-col lg:flex-row items-center justify-between mb-10 md:mb-16 border-b border-black/5 pb-8 md:pb-12 gap-6 md:gap-8">
-               <div className="flex items-center gap-4 md:gap-6 w-full lg:w-auto justify-between lg:justify-start">
-                 <button onClick={() => setView('welcome')} className="w-12 h-12 md:w-14 md:h-14 rounded-full border border-black/10 flex items-center justify-center hover:bg-near-black hover:text-white transition-all"><ArrowLeft size={20} className="md:w-6 md:h-6" /></button>
-                 <h2 className="text-3xl md:text-5xl font-black italic font-serif tracking-tight">Staff Terminal</h2>
+            {!isAuthenticated ? (
+               <div className="flex flex-col items-center justify-center min-h-[60vh]">
+                  <h2 className="text-3xl md:text-5xl font-black italic font-serif mb-6 tracking-tight">Staff Terminal</h2>
+                  <p className="text-[10px] md:text-xs text-[var(--text-muted)] uppercase tracking-widest font-black mb-8">Enter Authorization PIN</p>
+                  <div className="flex flex-col gap-4 w-full max-w-xs">
+                     <input 
+                        type="password" 
+                        value={pin}
+                        onChange={(e) => setPin(e.target.value)}
+                        placeholder="••••"
+                        className="w-full text-center text-4xl tracking-[0.5em] py-4 bg-white border-2 border-black/5 rounded-2xl focus:outline-none focus:border-[var(--secondary)]"
+                     />
+                     <button 
+                        onClick={() => {
+                           if (pin === '1234') { setIsAuthenticated(true); setPin(''); }
+                           else { alert('Invalid PIN'); setPin(''); }
+                        }}
+                        className="w-full btn bg-near-black text-white py-5 shadow-xl"
+                     >
+                        Unlock Terminal
+                     </button>
+                     <button onClick={() => { setView('welcome'); setPin(''); }} className="text-[10px] uppercase tracking-widest text-[var(--text-muted)] mt-4 font-bold hover:text-black">Return to Welcome</button>
+                  </div>
                </div>
-               
-               {/* Dashboard Tabs (Desktop Only) */}
-               <div className="hidden md:flex flex-wrap justify-center gap-2 bg-white rounded-full shadow-sm border border-black/5 p-2 w-full lg:w-auto">
-                 <button onClick={() => setAdminTab('manager')} className={`px-8 py-3 rounded-full text-xs uppercase tracking-widest font-black transition-all ${adminTab === 'manager' ? 'bg-near-black text-white' : 'text-gray-500 hover:text-near-black'}`}>Manager</button>
-                 <button onClick={() => setAdminTab('kitchen')} className={`px-8 py-3 rounded-full text-xs uppercase tracking-widest font-black transition-all ${adminTab === 'kitchen' ? 'bg-near-black text-white' : 'text-gray-500 hover:text-near-black'}`}>Kitchen</button>
-                 <button onClick={() => setAdminTab('waiter')} className={`px-8 py-3 rounded-full text-xs uppercase tracking-widest font-black transition-all ${adminTab === 'waiter' ? 'bg-near-black text-white' : 'text-gray-500 hover:text-near-black'}`}>Waitstaff</button>
-                 <button onClick={() => setAdminTab('tables')} className={`px-8 py-3 rounded-full text-xs uppercase tracking-widest font-black transition-all ${adminTab === 'tables' ? 'bg-[var(--secondary)] text-white' : 'text-gray-500 hover:text-[var(--secondary)]'}`}>QR Gen</button>
-               </div>
-            </div>
+            ) : (
+              <>
+                <div className="flex flex-col lg:flex-row items-center justify-between mb-10 md:mb-16 border-b border-black/5 pb-8 md:pb-12 gap-6 md:gap-8">
+                   <div className="flex items-center gap-4 md:gap-6 w-full lg:w-auto justify-between lg:justify-start">
+                     <button onClick={() => { setView('welcome'); setIsAuthenticated(false); }} className="w-12 h-12 md:w-14 md:h-14 rounded-full border border-black/10 flex items-center justify-center hover:bg-near-black hover:text-white transition-all"><ArrowLeft size={20} className="md:w-6 md:h-6" /></button>
+                     <h2 className="text-3xl md:text-5xl font-black italic font-serif tracking-tight">Staff Terminal</h2>
+                   </div>
+                   
+                   {/* Dashboard Tabs (Desktop Only) */}
+                   <div className="hidden md:flex flex-wrap justify-center gap-2 bg-white rounded-full shadow-sm border border-black/5 p-2 w-full lg:w-auto">
+                     <button onClick={() => setAdminTab('manager')} className={`px-8 py-3 rounded-full text-xs uppercase tracking-widest font-black transition-all ${adminTab === 'manager' ? 'bg-near-black text-white' : 'text-gray-500 hover:text-near-black'}`}>Manager</button>
+                     <button onClick={() => setAdminTab('kitchen')} className={`px-8 py-3 rounded-full text-xs uppercase tracking-widest font-black transition-all ${adminTab === 'kitchen' ? 'bg-near-black text-white' : 'text-gray-500 hover:text-near-black'}`}>Kitchen</button>
+                     <button onClick={() => setAdminTab('waiter')} className={`px-8 py-3 rounded-full text-xs uppercase tracking-widest font-black transition-all ${adminTab === 'waiter' ? 'bg-near-black text-white' : 'text-gray-500 hover:text-near-black'}`}>Waitstaff</button>
+                     <button onClick={() => setAdminTab('tables')} className={`px-8 py-3 rounded-full text-xs uppercase tracking-widest font-black transition-all ${adminTab === 'tables' ? 'bg-[var(--secondary)] text-white' : 'text-gray-500 hover:text-[var(--secondary)]'}`}>QR Gen</button>
+                   </div>
+                </div>
 
             {adminTab === 'manager' ? (
                <div className="pb-24">
@@ -619,7 +731,7 @@ export default function App() {
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-10">
                      <div className="card p-6 bg-white shadow-xl rounded-3xl border border-black/5">
                         <p className="text-[10px] uppercase tracking-widest text-[var(--text-muted)] font-black mb-2">Revenue</p>
-                        <p className="text-3xl font-serif italic text-near-black">${orders.filter(o => o.status === 'delivered').reduce((s, o) => s + o.total, 0).toFixed(2)}</p>
+                        <p className="text-3xl font-serif italic text-near-black">₹{orders.filter(o => o.status === 'delivered').reduce((s, o) => s + o.total, 0).toFixed(0)}</p>
                      </div>
                      <div className="card p-6 bg-white shadow-xl rounded-3xl border border-black/5">
                         <p className="text-[10px] uppercase tracking-widest text-[var(--text-muted)] font-black mb-2">Total Orders</p>
@@ -629,28 +741,73 @@ export default function App() {
                         <p className="text-[10px] uppercase tracking-widest text-[var(--text-muted)] font-black mb-2">Active Tables</p>
                         <p className="text-3xl font-serif italic text-near-black">{new Set(orders.filter(o => o.status !== 'delivered').map(o => o.tableNumber)).size}</p>
                      </div>
-                     <div className="card p-6 bg-[var(--secondary)] text-white shadow-xl rounded-3xl">
-                        <p className="text-[10px] uppercase tracking-widest text-white/80 font-black mb-2">Status</p>
-                        <p className="text-3xl font-serif italic">Online</p>
+                     <div 
+                        className="card p-6 bg-[var(--secondary)] text-white shadow-xl rounded-3xl cursor-pointer hover:bg-black transition-colors"
+                        onClick={() => {
+                          if ("Notification" in window) {
+                             Notification.requestPermission().then(p => {
+                                if(p === 'granted') alert('Push Notifications Enabled!');
+                             });
+                          }
+                        }}
+                     >
+                        <p className="text-[10px] uppercase tracking-widest text-white/80 font-black mb-2">Push Alerts</p>
+                        <div className="flex items-center gap-2">
+                          <p className="text-2xl font-serif italic">Enable</p>
+                        </div>
                      </div>
                   </div>
-                  <h3 className="text-2xl md:text-3xl font-serif italic mb-6">Recent Activity</h3>
-                  <div className="bg-white rounded-[32px] p-6 shadow-xl border border-black/5">
-                     {orders.slice(0, 5).map(order => (
-                        <div key={order.id} className="flex justify-between items-center py-4 border-b border-black/5 last:border-0">
-                           <div>
-                              <p className="font-serif text-lg">Table {order.tableNumber}</p>
-                              <p className="text-[10px] uppercase tracking-widest text-[var(--text-muted)] font-black">{new Date(order.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
-                           </div>
-                           <div className="text-right">
-                              <p className="font-bold">${order.total.toFixed(2)}</p>
-                              <span className={`text-[9px] uppercase tracking-widest font-black px-3 py-1 rounded-full ${order.status === 'delivered' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
-                                 {order.status}
-                              </span>
-                           </div>
-                        </div>
-                     ))}
-                     {orders.length === 0 && <p className="text-[var(--text-muted)] text-center py-10">No activity yet today.</p>}
+                  <div className="flex flex-col md:flex-row items-center justify-between mb-6 gap-4">
+                     <h3 className="text-2xl md:text-3xl font-serif italic">Order Details & Revenue</h3>
+                     <button onClick={downloadCSV} className="btn bg-near-black text-white px-6 py-3 text-[10px] tracking-widest uppercase shadow-lg flex items-center gap-2">
+                        Download CSV
+                     </button>
+                  </div>
+                  
+                  <div className="bg-white rounded-[32px] p-6 shadow-xl border border-black/5 overflow-x-auto">
+                     <table className="w-full text-left border-collapse min-w-[600px]">
+                        <thead>
+                           <tr className="border-b border-black/5">
+                              <th className="pb-4 text-[10px] uppercase tracking-widest text-[var(--text-muted)] font-black">Table/User</th>
+                              <th className="pb-4 text-[10px] uppercase tracking-widest text-[var(--text-muted)] font-black">Items</th>
+                              <th className="pb-4 text-[10px] uppercase tracking-widest text-[var(--text-muted)] font-black">Revenue</th>
+                              <th className="pb-4 text-[10px] uppercase tracking-widest text-[var(--text-muted)] font-black">Status</th>
+                              <th className="pb-4 text-[10px] uppercase tracking-widest text-[var(--text-muted)] font-black text-right">Actions</th>
+                           </tr>
+                        </thead>
+                        <tbody>
+                           {orders.map(order => (
+                              <tr key={order.id} className="border-b border-black/5 last:border-0 hover:bg-gray-50 transition-colors">
+                                 <td className="py-4 font-serif text-lg">
+                                    Table {order.tableNumber}
+                                    <span className="block text-[10px] font-sans uppercase tracking-widest text-gray-400 font-bold mt-1">
+                                       {new Date(order.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                    </span>
+                                 </td>
+                                 <td className="py-4">
+                                    <div className="text-xs text-gray-600 max-w-xs truncate">
+                                       {order.items.map(i => `${i.quantity}x ${i.name}`).join(', ')}
+                                    </div>
+                                 </td>
+                                 <td className="py-4 font-bold text-[var(--secondary)]">₹{order.total.toFixed(0)}</td>
+                                 <td className="py-4">
+                                    <span className={`text-[9px] uppercase tracking-widest font-black px-3 py-1 rounded-full ${order.status === 'delivered' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                                       {order.status}
+                                    </span>
+                                 </td>
+                                 <td className="py-4 text-right">
+                                    <button 
+                                       onClick={() => printBill(order)} 
+                                       className="text-[9px] uppercase tracking-widest font-black text-[var(--primary)] bg-[var(--primary)]/10 px-4 py-2 rounded-full hover:bg-[var(--primary)] hover:text-white transition-colors"
+                                    >
+                                       Print Bill
+                                    </button>
+                                 </td>
+                              </tr>
+                           ))}
+                        </tbody>
+                     </table>
+                     {orders.length === 0 && <p className="text-[var(--text-muted)] text-center py-10">No orders placed yet.</p>}
                   </div>
                </div>
             ) : adminTab === 'tables' ? (
@@ -730,7 +887,7 @@ export default function App() {
                          <div className="md:w-64 flex flex-col justify-between border-t md:border-t-0 md:border-l border-black/5 pt-6 md:pt-0 md:pl-12 mt-4 md:mt-0">
                             <div className="flex flex-row md:flex-col justify-between items-center md:items-start mb-6 md:mb-0">
                                <span className="text-[9px] md:text-[10px] uppercase tracking-[0.4em] font-black text-[var(--text-muted)] block mb-0 md:mb-2">Order Total</span>
-                               <span className="text-3xl md:text-4xl font-black gold-gradient tracking-tighter">${order.total.toFixed(2)}</span>
+                               <span className="text-3xl md:text-4xl font-black gold-gradient tracking-tighter">₹{order.total.toFixed(0)}</span>
                             </div>
                             
                             {/* Action Buttons based on status */}
@@ -754,83 +911,70 @@ export default function App() {
                   )}
                </div>
             )}
+            </>
+          )}
           </motion.div>
         )}
 
       </AnimatePresence>
 
-      {/* --- Floating Global Tray Pod (Desktop Only) --- */}
-      {view === 'menu' && cart.length > 0 && (
-        <div className="hidden md:flex fixed bottom-12 left-0 w-full justify-center z-[100]">
-          <motion.button
-            initial={{ y: 100, opacity: 0, scale: 0.9 }}
-            animate={{ y: 0, opacity: 1, scale: 1 }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setView('cart')}
-            className="w-full md:w-auto max-w-[360px] md:max-w-none glass px-6 py-4 md:px-12 md:py-7 rounded-[28px] md:rounded-full shadow-[0_20px_60px_rgba(0,0,0,0.15)] flex items-center justify-between md:justify-start md:gap-10 border border-white/40"
-          >
-            <div className="flex items-center gap-4 md:gap-10">
-               <div className="relative">
-                 <ShoppingBag size={24} className="md:w-8 md:h-8 text-near-black" />
-                 <span className="absolute -top-3 -right-3 md:-top-4 md:-right-4 bg-[var(--secondary)] text-white w-6 h-6 md:w-8 md:h-8 rounded-full text-[9px] md:text-[11px] flex items-center justify-center font-black border-2 md:border-4 border-white">
-                   {cart.reduce((s, i) => s + i.quantity, 0)}
-                 </span>
-               </div>
-               <div className="hidden md:block h-10 w-[2px] bg-black/5" />
-               <div className="flex flex-col items-start leading-none">
-                 <span className="text-[8px] md:text-[10px] uppercase tracking-[0.4em] font-black text-[var(--text-muted)] mb-1.5 md:mb-2 block">Your Tray</span>
-                 <span className="text-xl md:text-3xl font-black italic font-serif tracking-tight">${cartTotal.toFixed(2)}</span>
-               </div>
-            </div>
-            <div className="w-10 h-10 md:w-auto md:h-auto rounded-full bg-[var(--primary)]/5 md:bg-transparent flex items-center justify-center">
-               <ChevronRight size={20} className="md:w-6 md:h-6 text-[var(--secondary)] md:opacity-40" />
-            </div>
-          </motion.button>
-        </div>
-      )}
-      {/* --- Android Style Bottom Nav for Guests --- */}
-      {['menu', 'cart', 'order-success'].includes(view) && (
-        <div className="md:hidden fixed bottom-0 left-0 w-full bg-white dark:bg-[#1a1a1a] border-t border-black/5 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] z-[100] pb-safe">
-           <div className="flex justify-around items-center h-16">
-              <button onClick={() => setView('menu')} className={`flex flex-col items-center justify-center w-full h-full ${view === 'menu' ? 'text-[var(--secondary)]' : 'text-[var(--text-muted)]'}`}>
-                 <Coffee size={20} className="mb-1" />
-                 <span className="text-[9px] font-black uppercase tracking-widest">Menu</span>
+
+      {/* --- Unified Floating Nav Pill for Guests --- */}
+      {view === 'menu' && (
+        <div className="fixed bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 z-[100] flex justify-center w-[95%] max-w-[500px]">
+           <nav className="vitreous-nav reveal" onMouseMove={(e) => {
+              const rect = e.currentTarget.getBoundingClientRect();
+              const x = ((e.clientX - rect.left) / rect.width) * 100;
+              const y = ((e.clientY - rect.top) / rect.height) * 100;
+              e.currentTarget.style.setProperty('--mouse-x', `${x}%`);
+              e.currentTarget.style.setProperty('--mouse-y', `${y}%`);
+              const tiltX = (rect.height / 2 - (e.clientY - rect.top)) / 10;
+              const tiltY = ((e.clientX - rect.left) - rect.width / 2) / 25;
+              e.currentTarget.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+           }} onMouseLeave={(e) => {
+              e.currentTarget.style.transform = `rotateX(0) rotateY(0)`;
+           }}>
+              <div className="nav-items flex">
+                  <button onClick={() => setView('menu')} className="nav-link px-3 sm:px-5 active"><Coffee size={20} /></button>
+                  <button onClick={() => setView('cart')} className="nav-link px-3 sm:px-5">
+                     <ShoppingBag size={20} />
+                     {cart.length > 0 && <span className="absolute top-1.5 right-2 sm:right-4 w-2 h-2 bg-red-500 rounded-full shadow-[0_0_8px_rgba(239,68,68,0.8)]" />}
+                  </button>
+                  <button onClick={() => setView('admin')} className="nav-link px-3 sm:px-5"><LayoutGrid size={20} /></button>
+              </div>
+
+              <div className="divider"></div>
+
+              <button className="cart-trigger shrink-0 !px-3 sm:!px-5" onClick={() => setView('cart')}>
+                  <span className="cart-count">{cart.reduce((s, i) => s + i.quantity, 0)}</span>
+                  <span className="cart-label italic font-serif text-[var(--secondary)] hidden sm:inline-block">₹{cartTotal.toFixed(0)}</span>
               </button>
-              <button onClick={() => setView('cart')} className={`flex flex-col items-center justify-center w-full h-full relative ${view === 'cart' ? 'text-[var(--secondary)]' : 'text-[var(--text-muted)]'}`}>
-                 <ShoppingBag size={20} className="mb-1" />
-                 {cart.length > 0 && <span className="absolute top-2 right-6 w-3 h-3 bg-red-500 rounded-full border-2 border-white" />}
-                 <span className="text-[9px] font-black uppercase tracking-widest">Tray</span>
-              </button>
-              <button onClick={() => setView('admin')} className="flex flex-col items-center justify-center w-full h-full text-[var(--text-muted)]">
-                 <LayoutGrid size={20} className="mb-1" />
-                 <span className="text-[9px] font-black uppercase tracking-widest">Staff</span>
-              </button>
-           </div>
+           </nav>
         </div>
       )}
 
-      {/* --- Android Style Bottom Nav for Staff --- */}
+      {/* --- Unified Floating Nav Pill for Staff --- */}
       {view === 'admin' && (
-        <div className="md:hidden fixed bottom-0 left-0 w-full bg-white dark:bg-[#1a1a1a] border-t border-black/5 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] z-[100] pb-safe">
-           <div className="flex justify-around items-center h-16">
-              <button onClick={() => setAdminTab('manager')} className={`flex flex-col items-center justify-center w-full h-full ${adminTab === 'manager' ? 'text-[var(--secondary)]' : 'text-[var(--text-muted)]'}`}>
-                 <BarChart3 size={20} className="mb-1" />
-                 <span className="text-[8px] font-black uppercase tracking-widest">Manager</span>
-              </button>
-              <button onClick={() => setAdminTab('kitchen')} className={`flex flex-col items-center justify-center w-full h-full ${adminTab === 'kitchen' ? 'text-[var(--secondary)]' : 'text-[var(--text-muted)]'}`}>
-                 <Utensils size={20} className="mb-1" />
-                 <span className="text-[8px] font-black uppercase tracking-widest">Kitchen</span>
-              </button>
-              <button onClick={() => setAdminTab('waiter')} className={`flex flex-col items-center justify-center w-full h-full ${adminTab === 'waiter' ? 'text-[var(--secondary)]' : 'text-[var(--text-muted)]'}`}>
-                 <ClipboardList size={20} className="mb-1" />
-                 <span className="text-[8px] font-black uppercase tracking-widest">Waiter</span>
-              </button>
-              <button onClick={() => setAdminTab('tables')} className={`flex flex-col items-center justify-center w-full h-full ${adminTab === 'tables' ? 'text-[var(--secondary)]' : 'text-[var(--text-muted)]'}`}>
-                 <QrCode size={20} className="mb-1" />
-                 <span className="text-[8px] font-black uppercase tracking-widest">QR Gen</span>
-              </button>
-           </div>
+        <div className="fixed bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 z-[100] flex justify-center w-[95%] max-w-[600px]">
+           <nav className="vitreous-nav reveal" onMouseMove={(e) => {
+              const rect = e.currentTarget.getBoundingClientRect();
+              const x = ((e.clientX - rect.left) / rect.width) * 100;
+              const y = ((e.clientY - rect.top) / rect.height) * 100;
+              e.currentTarget.style.setProperty('--mouse-x', `${x}%`);
+              e.currentTarget.style.setProperty('--mouse-y', `${y}%`);
+              const tiltX = (rect.height / 2 - (e.clientY - rect.top)) / 10;
+              const tiltY = ((e.clientX - rect.left) - rect.width / 2) / 25;
+              e.currentTarget.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+           }} onMouseLeave={(e) => {
+              e.currentTarget.style.transform = `rotateX(0) rotateY(0)`;
+           }}>
+              <div className="nav-items flex">
+                  <button onClick={() => setAdminTab('manager')} className={`nav-link px-4 sm:px-6 ${adminTab === 'manager' ? 'active' : ''}`}><BarChart3 size={20} /></button>
+                  <button onClick={() => setAdminTab('kitchen')} className={`nav-link px-4 sm:px-6 ${adminTab === 'kitchen' ? 'active' : ''}`}><Utensils size={20} /></button>
+                  <button onClick={() => setAdminTab('waiter')} className={`nav-link px-4 sm:px-6 ${adminTab === 'waiter' ? 'active' : ''}`}><ClipboardList size={20} /></button>
+                  <button onClick={() => setAdminTab('tables')} className={`nav-link px-4 sm:px-6 ${adminTab === 'tables' ? 'active' : ''}`}><QrCode size={20} /></button>
+              </div>
+           </nav>
         </div>
       )}
     </div>
