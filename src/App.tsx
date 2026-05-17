@@ -400,14 +400,14 @@ export default function App() {
                   ].map((item, idx) => (
                     <motion.div 
                        key={idx} 
-                       className="space-y-4 md:space-y-6 group bg-white/50 md:bg-transparent p-6 md:p-0 rounded-3xl"
+                       className="space-y-4 md:space-y-6 group bg-[var(--tile-bg)] md:bg-transparent p-6 md:p-0 rounded-3xl"
                        initial={{ opacity: 0, y: 20 }}
                        whileInView={{ opacity: 1, y: 0 }}
                        viewport={{ once: true }}
                        transition={{ delay: idx * 0.1 }}
                     >
                        <div className="flex justify-center transition-transform group-hover:-translate-y-3 duration-500">
-                          <item.icon strokeWidth={0.5} className="w-12 h-12 md:w-14 md:h-14 text-[var(--secondary)]" />
+                          <item.icon strokeWidth={0.5} className="w-12 h-12 md:w-14 md:h-14 text-[var(--tile-icon)]" />
                        </div>
                        <h4 className="text-xl md:text-2xl font-serif italic">{item.title}</h4>
                        <p className="text-[9px] md:text-[10px] text-[var(--text-muted)] font-black uppercase tracking-[0.1em] leading-relaxed">{item.desc}</p>
@@ -846,60 +846,61 @@ export default function App() {
                   </div>
                </div>
             ) : (
-               <div className="space-y-6 md:space-y-12">
+               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 pb-32">
                   {orders.filter(o => 
                     adminTab === 'kitchen' ? ['pending', 'preparing'].includes(o.status) 
                     : ['ready', 'delivered'].includes(o.status)
                   ).length === 0 ? (
-                    <div className="py-20 md:py-32 text-center border-4 border-dashed border-black/5 rounded-3xl md:rounded-[40px]">
-                       <p className="text-[var(--text-muted)] italic text-xl md:text-2xl font-serif px-6">No active tasks in this queue.</p>
+                    <div className="col-span-full py-20 text-center border-4 border-dashed border-black/5 rounded-3xl">
+                       <p className="text-[var(--text-muted)] italic text-lg md:text-xl font-serif px-6">No active tasks in this queue.</p>
                     </div>
                   ) : (
                     orders.filter(o => 
                       adminTab === 'kitchen' ? ['pending', 'preparing'].includes(o.status) 
                       : ['ready', 'delivered'].includes(o.status)
                     ).map(order => (
-                      <motion.div layout key={order.id} className="card p-6 md:p-12 flex flex-col md:flex-row gap-6 md:gap-12 shadow-xl border-none relative overflow-hidden rounded-3xl md:rounded-[40px]">
+                      <motion.div layout key={order.id} className="card bg-white p-5 md:p-6 flex flex-col gap-4 shadow-lg border border-black/5 relative overflow-hidden rounded-2xl md:rounded-3xl">
                          {order.status === 'delivered' && <div className="absolute inset-0 bg-white/60 z-10 pointer-events-none" />}
-                         <div className="flex-1">
-                            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 mb-6 md:mb-10 border-b border-black/5 pb-4 md:pb-0 md:border-none">
-                               <span className="text-4xl md:text-5xl font-black italic font-serif tracking-tight">Table {order.tableNumber}</span>
-                               <div className="flex flex-wrap items-center gap-2 md:gap-3">
-                                 <span className={`px-4 py-1.5 md:px-5 md:py-2 text-white text-[9px] md:text-[10px] font-black uppercase tracking-[0.3em] rounded-full ${order.status === 'pending' ? 'bg-red-500' : order.status === 'preparing' ? 'bg-orange-500' : order.status === 'ready' ? 'bg-green-500' : 'bg-gray-400'}`}>
-                                   {order.status}
-                                 </span>
-                                 <span className="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-widest border border-gray-200 px-3 py-1 md:py-1.5 rounded-full">
-                                   Pay: {order.paymentMethod}
-                                 </span>
-                               </div>
+                         
+                         <div className="flex justify-between items-start border-b border-black/5 pb-4">
+                            <div>
+                               <span className="text-2xl md:text-3xl font-black italic font-serif tracking-tight block mb-1">Table {order.tableNumber}</span>
+                               <span className="text-[9px] md:text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                                 {new Date(order.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} • Pay: {order.paymentMethod}
+                               </span>
                             </div>
-                            <div className="space-y-4 md:space-y-6">
-                               {order.items.map(i => (
-                                 <div key={i.id} className="flex justify-between items-center text-base md:text-lg font-bold border-b border-black/5 pb-3 md:pb-4">
-                                    <span className="font-serif italic pr-4"><span className="text-[var(--secondary)] text-xs md:text-sm font-black mr-2 not-italic">{i.quantity}x</span> {i.name}</span>
-                                 </div>
-                               ))}
-                            </div>
+                            <span className={`px-3 py-1 text-white text-[8px] md:text-[9px] font-black uppercase tracking-widest rounded-full shadow-sm ${order.status === 'pending' ? 'bg-red-500' : order.status === 'preparing' ? 'bg-orange-500' : order.status === 'ready' ? 'bg-green-500' : 'bg-gray-400'}`}>
+                               {order.status}
+                            </span>
                          </div>
-                         <div className="md:w-64 flex flex-col justify-between border-t md:border-t-0 md:border-l border-black/5 pt-6 md:pt-0 md:pl-12 mt-4 md:mt-0">
-                            <div className="flex flex-row md:flex-col justify-between items-center md:items-start mb-6 md:mb-0">
-                               <span className="text-[9px] md:text-[10px] uppercase tracking-[0.4em] font-black text-[var(--text-muted)] block mb-0 md:mb-2">Order Total</span>
-                               <span className="text-3xl md:text-4xl font-black gold-gradient tracking-tighter">₹{order.total.toFixed(0)}</span>
+                         
+                         <div className="flex-1 overflow-y-auto max-h-[200px] pr-2 space-y-2 my-2">
+                            {order.items.map(i => (
+                              <div key={i.id} className="flex justify-between items-start text-sm md:text-base font-bold">
+                                 <span className="font-serif italic leading-tight"><span className="text-[var(--secondary)] text-xs font-black mr-2 not-italic">{i.quantity}x</span> {i.name}</span>
+                              </div>
+                            ))}
+                         </div>
+                         
+                         <div className="border-t border-black/5 pt-4 mt-auto">
+                            <div className="flex justify-between items-center mb-4">
+                               <span className="text-[9px] uppercase tracking-[0.2em] font-black text-[var(--text-muted)]">Total</span>
+                               <span className="text-xl md:text-2xl font-black gold-gradient tracking-tighter">₹{order.total.toFixed(0)}</span>
                             </div>
                             
                             {/* Action Buttons based on status */}
-                            <div className="flex flex-col gap-3">
+                            <div className="flex flex-col gap-2">
                                {order.status === 'pending' && adminTab === 'kitchen' && (
-                                 <button onClick={() => updateOrderStatus(order.id, 'preparing')} className="btn bg-orange-500 text-white py-4 md:py-5 text-[9px] md:text-[10px] tracking-[0.2em] w-full shadow-lg">Start Preparing</button>
+                                 <button onClick={() => updateOrderStatus(order.id, 'preparing')} className="btn bg-orange-500 text-white py-3 text-[9px] md:text-[10px] tracking-[0.2em] w-full shadow-md hover:bg-orange-600 transition-colors">Start Preparing</button>
                                )}
                                {order.status === 'preparing' && adminTab === 'kitchen' && (
-                                 <button onClick={() => updateOrderStatus(order.id, 'ready')} className="btn bg-green-500 text-white py-4 md:py-5 text-[9px] md:text-[10px] tracking-[0.2em] w-full shadow-lg">Mark as Ready</button>
+                                 <button onClick={() => updateOrderStatus(order.id, 'ready')} className="btn bg-green-500 text-white py-3 text-[9px] md:text-[10px] tracking-[0.2em] w-full shadow-md hover:bg-green-600 transition-colors">Mark as Ready</button>
                                )}
                                {order.status === 'ready' && adminTab === 'waiter' && (
-                                 <button onClick={() => updateOrderStatus(order.id, 'delivered')} className="btn bg-blue-500 text-white py-4 md:py-5 text-[9px] md:text-[10px] tracking-[0.2em] w-full shadow-lg">Mark Delivered</button>
+                                 <button onClick={() => updateOrderStatus(order.id, 'delivered')} className="btn bg-blue-500 text-white py-3 text-[9px] md:text-[10px] tracking-[0.2em] w-full shadow-md hover:bg-blue-600 transition-colors">Mark Delivered</button>
                                )}
                                {order.status === 'delivered' && (
-                                 <span className="text-center text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest bg-gray-100 py-3 rounded-xl">Completed</span>
+                                 <span className="text-center text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest bg-gray-100 py-2 rounded-lg">Completed</span>
                                )}
                             </div>
                          </div>

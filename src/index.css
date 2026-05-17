@@ -21,6 +21,8 @@
   --bg-primary: #faf9f6;
   --text-main: #1a1a1a;
   --text-muted: #706f6c;
+  --tile-bg: rgba(255, 255, 255, 0.5);
+  --tile-icon: var(--secondary);
 }
 
 [data-theme='dark'] {
@@ -29,6 +31,8 @@
   --bg-primary: #121211;
   --text-main: #faf9f6;
   --text-muted: #9e9d98;
+  --tile-bg: transparent;
+  --tile-icon: #ffffff;
 }
 
 body {
