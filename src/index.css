@@ -347,7 +347,6 @@ body {
 
 .status-pill {
   position: absolute;
-  bottom: 40px;
   padding: 12px 24px;
   background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(10px);

@@ -329,14 +329,14 @@ export default function App() {
                   )}
                </div>
 
-               <div className="status-pill">
+               <div className="status-pill bottom-32 md:bottom-40">
                   <div className="status-dot"></div>
                   <span className="font-mono text-[10px] md:text-[11px] tracking-widest uppercase text-[var(--text-main)]">
                     {isCameraActive ? 'Aligning Sensors...' : 'Camera Standby'}
                   </span>
                </div>
 
-               <footer className="absolute bottom-16 md:bottom-24 flex gap-6 z-30">
+               <footer className="absolute bottom-12 md:bottom-20 flex gap-6 z-30">
                   <div className="control-btn text-[var(--text-main)]" title="Toggle Flash" onClick={() => setIsCameraActive(!isCameraActive)}>
                      <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current"><path d="M7 2v11h3v9l7-12h-4l4-8H7z"/></svg>
                   </div>
@@ -391,7 +391,7 @@ export default function App() {
                </div>
 
                {/* Property Highlights */}
-               <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 sm:gap-20 text-center mb-20 md:mb-32">
+               <section className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-12 md:gap-20 text-center mb-24 md:mb-40">
                   {[
                     { icon: QrCode, title: 'Scan & Order', desc: 'Instant access from your table' },
                     { icon: Phone, title: 'Cash or Digital', desc: 'Flexible payment options' },
@@ -682,7 +682,7 @@ export default function App() {
             key="admin"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="p-5 md:p-10 lg:p-20 max-w-7xl mx-auto"
+            className="p-5 md:p-10 lg:p-20 max-w-7xl mx-auto pb-32 md:pb-40"
           >
             {!isAuthenticated ? (
                <div className="flex flex-col items-center justify-center min-h-[60vh]">
@@ -811,11 +811,8 @@ export default function App() {
                   </div>
                </div>
             ) : adminTab === 'tables' ? (
-               <div className="max-w-2xl mx-auto text-center px-4 md:px-0">
-                  <h3 className="text-2xl md:text-3xl font-serif italic mb-3 md:mb-4">Table QR Generation</h3>
-                  <p className="text-sm md:text-base text-[var(--text-muted)] mb-8 md:mb-12">Enter a table number below to generate its unique QR code. Print these codes and place them on your tables.</p>
-                  
-                  <div className="card p-8 md:p-12 bg-white shadow-2xl rounded-[32px] md:rounded-[40px] border border-black/5 relative overflow-hidden flex flex-col items-center">
+               <div className="max-w-2xl mx-auto text-center px-4 md:px-0 pb-32 md:pb-40">
+                  <div className="card p-8 md:p-12 bg-white shadow-2xl rounded-[32px] md:rounded-[40px] border border-black/5 relative overflow-hidden flex flex-col items-center mt-4">
                      <div className="absolute top-0 left-0 w-full h-3 bg-gradient-to-r from-[var(--secondary)] to-near-black" />
                      
                      <div className="mb-8 md:mb-10 w-full max-w-xs">
