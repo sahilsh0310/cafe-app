@@ -21,6 +21,9 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { QRCodeSVG } from 'qrcode.react';
 import { Scanner } from '@yudiel/react-qr-scanner';
+import { io } from 'socket.io-client';
+
+const socket = io(`http://${window.location.hostname}:3001`);
 
 // --- Types ---
 interface MenuItem {
@@ -103,10 +106,57 @@ export default function App() {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
-  // Load orders from local storage to persist between views
+  // Load orders from local storage and sync with Socket.io
   useEffect(() => {
     const savedOrders = localStorage.getItem('cafe_orders');
     if (savedOrders) setOrders(JSON.parse(savedOrders));
+
+    socket.on('init-orders', (serverOrders: Order[]) => {
+      if(serverOrders && serverOrders.length > 0) {
+        setOrders(serverOrders);
+        localStorage.setItem('cafe_orders', JSON.stringify(serverOrders));
+      }
+    });
+
+    socket.on('order-added', (newOrder: Order) => {
+      setOrders(prev => {
+        // Prevent duplicate if this device placed the order
+        if(prev.find(o => o.id === newOrder.id)) return prev;
+        const updated = [newOrder, ...prev];
+        localStorage.setItem('cafe_orders', JSON.stringify(updated));
+        
+        // Notify staff devices when a new order arrives from another device
+        if (Notification.permission === "granted") {
+           new Notification("New Order Received!", { body: `Table ${newOrder.tableNumber} ordered ${newOrder.items.length} items (₹${newOrder.total}).`, icon: '/vite.svg' });
+        }
+        
+        return updated;
+      });
+    });
+
+    socket.on('order-updated', ({ orderId, status }: { orderId: string, status: Order['status'] }) => {
+      setOrders(prev => {
+        const updated = prev.map(o => o.id === orderId ? { ...o, status } : o);
+        localStorage.setItem('cafe_orders', JSON.stringify(updated));
+        
+        const order = updated.find(o => o.id === orderId);
+        if (order && Notification.permission === "granted") {
+           if (status === 'preparing') {
+             new Notification("Order is being prepared!", { body: `Great news! The kitchen has started preparing the order for Table ${order.tableNumber}.`, icon: '/vite.svg' });
+           } else if (status === 'ready') {
+             new Notification("Order Ready!", { body: `Order for Table ${order.tableNumber} is ready for delivery.`, icon: '/vite.svg' });
+           }
+        }
+        
+        return updated;
+      });
+    });
+
+    return () => {
+      socket.off('init-orders');
+      socket.off('order-added');
+      socket.off('order-updated');
+    };
   }, []);
 
   const saveOrders = (newOrders: Order[]) => {
@@ -180,6 +230,7 @@ export default function App() {
       paymentMethod: paymentMethod
     };
     
+    socket.emit('new-order', newOrder);
     saveOrders([newOrder, ...orders]);
     setCart([]);
     setPaymentMethod(null);
@@ -189,6 +240,7 @@ export default function App() {
   };
 
   const updateOrderStatus = (orderId: string, newStatus: Order['status']) => {
+    socket.emit('update-order-status', { orderId, status: newStatus });
     const updatedOrders = orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o);
     saveOrders(updatedOrders);
     
