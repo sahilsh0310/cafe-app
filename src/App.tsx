@@ -52,7 +52,7 @@ interface Order {
 }
 
 // --- Mock Data ---
-const MENU_ITEMS: MenuItem[] = [
+const DEFAULT_MENU_ITEMS: MenuItem[] = [
   { id: '1', name: 'Velvet Espresso', description: 'Double-shot of our signature house blend with a creamy, honey-like crema.', price: 450, category: 'Coffee', image: 'https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=600&h=600&fit=crop', rating: 4.9 },
   { id: '2', name: 'Gold Macchiato', description: 'Silky steamed milk marked with espresso and a drizzle of artisanal caramel.', price: 540, category: 'Coffee', image: 'https://images.unsplash.com/photo-1485808191679-5f6333bb210a?w=600&h=600&fit=crop', rating: 4.9 },
   { id: '9', name: 'Emerald Matcha', description: 'Ceremonial grade Uji matcha whisked with creamy oat milk and local honey.', price: 600, category: 'Tea', image: 'https://images.unsplash.com/photo-1515823064-d6e0c04616a7?w=600&h=600&fit=crop', rating: 4.8 },
@@ -63,7 +63,7 @@ const MENU_ITEMS: MenuItem[] = [
   { id: '11', name: 'Aurelia Bowl', description: 'Quinoa, roasted seasonal squash, spiced chickpeas, and tahini drizzle.', price: 1320, category: 'Mains', image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&h=600&fit=crop', rating: 4.5 },
 ];
 
-const CATEGORIES = ['All', 'Coffee', 'Tea', 'Brunch', 'Bakery', 'Mains', 'Desserts'];
+const DEFAULT_CATEGORIES = ['Coffee', 'Tea', 'Brunch', 'Bakery', 'Mains', 'Desserts'];
 
 export default function App() {
   const [view, setView] = useState<'welcome' | 'menu' | 'cart' | 'checkout' | 'order-success' | 'admin'>('welcome');
@@ -76,9 +76,37 @@ export default function App() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [paymentMethod, setPaymentMethod] = useState<'cash' | 'online' | null>(null);
-  const [adminTab, setAdminTab] = useState<'manager' | 'kitchen' | 'waiter' | 'tables'>('manager');
+  const [adminTab, setAdminTab] = useState<'manager' | 'kitchen' | 'waiter' | 'tables' | 'menu'>('manager');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [pin, setPin] = useState('');
+  
+  // Menu Management States
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
+  const [isAddingItem, setIsAddingItem] = useState(false);
+  const [newCategory, setNewCategory] = useState('');
+  const [isAddingCategory, setIsAddingCategory] = useState(false);
+
+  // Initialize menu items and categories from localStorage
+  useEffect(() => {
+    const savedMenu = localStorage.getItem('cafe_menu_items');
+    const savedCategories = localStorage.getItem('cafe_categories');
+    
+    if (savedMenu) {
+      setMenuItems(JSON.parse(savedMenu));
+    } else {
+      setMenuItems(DEFAULT_MENU_ITEMS);
+      localStorage.setItem('cafe_menu_items', JSON.stringify(DEFAULT_MENU_ITEMS));
+    }
+    
+    if (savedCategories) {
+      setCategories(JSON.parse(savedCategories));
+    } else {
+      setCategories(DEFAULT_CATEGORIES);
+      localStorage.setItem('cafe_categories', JSON.stringify(DEFAULT_CATEGORIES));
+    }
+  }, []);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -322,11 +350,51 @@ export default function App() {
 
   const toggleTheme = () => setTheme(prev => prev === 'light' ? 'dark' : 'light');
 
-  const filteredItems = MENU_ITEMS.filter(item => {
+  // Menu Management Functions
+  const saveMenuItems = (items: MenuItem[]) => {
+    setMenuItems(items);
+    localStorage.setItem('cafe_menu_items', JSON.stringify(items));
+  };
+
+  const saveCategories = (cats: string[]) => {
+    setCategories(cats);
+    localStorage.setItem('cafe_categories', JSON.stringify(cats));
+  };
+
+  const addMenuItem = (item: Omit<MenuItem, 'id'>) => {
+    const newItem: MenuItem = { ...item, id: Math.random().toString(36).substr(2, 9) };
+    saveMenuItems([...menuItems, newItem]);
+    setIsAddingItem(false);
+  };
+
+  const updateMenuItem = (id: string, updatedItem: MenuItem) => {
+    saveMenuItems(menuItems.map(item => item.id === id ? updatedItem : item));
+    setEditingItem(null);
+  };
+
+  const deleteMenuItem = (id: string) => {
+    saveMenuItems(menuItems.filter(item => item.id !== id));
+  };
+
+  const addCategory = (catName: string) => {
+    if (catName && !categories.includes(catName)) {
+      saveCategories([...categories, catName]);
+      setNewCategory('');
+      setIsAddingCategory(false);
+    }
+  };
+
+  const deleteCategory = (catName: string) => {
+    saveCategories(categories.filter(cat => cat !== catName));
+  };
+
+  const filteredItems = menuItems.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = activeCategory === 'All' || item.category === activeCategory;
     return matchesSearch && matchesCategory;
   });
+
+  const displayCategories = ['All', ...categories];
 
   return (
     <div className="min-h-screen bg-[var(--bg-primary)] transition-colors duration-700 font-sans">
@@ -521,7 +589,7 @@ export default function App() {
                </div>
 
                <div className="flex gap-3 overflow-x-auto pb-6 no-scrollbar mb-8 md:mb-12 snap-x">
-                  {CATEGORIES.map(cat => (
+                  {displayCategories.map(cat => (
                     <button
                       key={cat}
                       onClick={() => setActiveCategory(cat)}
@@ -784,7 +852,8 @@ export default function App() {
                      <button onClick={() => setAdminTab('manager')} className={`px-8 py-3 rounded-full text-xs uppercase tracking-widest font-black transition-all ${adminTab === 'manager' ? 'bg-near-black text-white' : 'text-gray-500 hover:text-near-black'}`}>Manager</button>
                      <button onClick={() => setAdminTab('kitchen')} className={`px-8 py-3 rounded-full text-xs uppercase tracking-widest font-black transition-all ${adminTab === 'kitchen' ? 'bg-near-black text-white' : 'text-gray-500 hover:text-near-black'}`}>Kitchen</button>
                      <button onClick={() => setAdminTab('waiter')} className={`px-8 py-3 rounded-full text-xs uppercase tracking-widest font-black transition-all ${adminTab === 'waiter' ? 'bg-near-black text-white' : 'text-gray-500 hover:text-near-black'}`}>Waitstaff</button>
-                     <button onClick={() => setAdminTab('tables')} className={`px-8 py-3 rounded-full text-xs uppercase tracking-widest font-black transition-all ${adminTab === 'tables' ? 'bg-[var(--secondary)] text-white' : 'text-gray-500 hover:text-[var(--secondary)]'}`}>QR Gen</button>
+                     <button onClick={() => setAdminTab('menu')} className={`px-8 py-3 rounded-full text-xs uppercase tracking-widest font-black transition-all ${adminTab === 'menu' ? 'bg-[var(--secondary)] text-white' : 'text-gray-500 hover:text-[var(--secondary)]'}`}>Menu</button>
+                     <button onClick={() => setAdminTab('tables')} className={`px-8 py-3 rounded-full text-xs uppercase tracking-widest font-black transition-all ${adminTab === 'tables' ? 'bg-gray-500 text-white' : 'text-gray-500 hover:text-gray-700'}`}>QR Gen</button>
                    </div>
                 </div>
 
@@ -872,6 +941,125 @@ export default function App() {
                      </table>
                      {orders.length === 0 && <p className="text-[var(--text-muted)] text-center py-10">No orders placed yet.</p>}
                   </div>
+               </div>
+            ) : adminTab === 'menu' ? (
+               <div className="pb-24">
+                  <h3 className="text-2xl md:text-3xl font-serif italic mb-8">Manage Menu & Categories</h3>
+                  
+                  {/* Categories Section */}
+                  <div className="mb-12">
+                     <div className="flex items-center justify-between mb-6">
+                        <h4 className="text-xl md:text-2xl font-bold">Categories</h4>
+                        <button 
+                           onClick={() => setIsAddingCategory(!isAddingCategory)}
+                           className="btn bg-[var(--secondary)] text-white px-4 py-2 text-sm"
+                        >
+                           {isAddingCategory ? 'Cancel' : '+ Add Category'}
+                        </button>
+                     </div>
+                     
+                     {isAddingCategory && (
+                        <div className="card p-6 mb-6 bg-white shadow-lg flex gap-3">
+                           <input 
+                              type="text"
+                              placeholder="Category name"
+                              value={newCategory}
+                              onChange={(e) => setNewCategory(e.target.value)}
+                              className="flex-1 px-4 py-3 border border-black/10 rounded-lg focus:outline-none focus:border-[var(--secondary)]"
+                           />
+                           <button 
+                              onClick={() => addCategory(newCategory)}
+                              disabled={!newCategory}
+                              className="btn bg-near-black text-white px-6 py-3 disabled:opacity-50"
+                           >
+                              Add
+                           </button>
+                        </div>
+                     )}
+                     
+                     <div className="flex flex-wrap gap-2">
+                        {categories.map(cat => (
+                           <div key={cat} className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-black/5 shadow-sm">
+                              <span>{cat}</span>
+                              <button 
+                                 onClick={() => deleteCategory(cat)}
+                                 className="text-red-500 hover:text-red-700 font-bold"
+                              >
+                                 ×
+                              </button>
+                           </div>
+                        ))}
+                     </div>
+                  </div>
+                  
+                  {/* Menu Items Section */}
+                  <div>
+                     <div className="flex items-center justify-between mb-6">
+                        <h4 className="text-xl md:text-2xl font-bold">Menu Items</h4>
+                        <button 
+                           onClick={() => setIsAddingItem(!isAddingItem)}
+                           className="btn bg-[var(--secondary)] text-white px-4 py-2 text-sm"
+                        >
+                           {isAddingItem ? 'Cancel' : '+ Add Item'}
+                        </button>
+                     </div>
+                     
+                     {isAddingItem && (
+                        <MenuItemForm 
+                           categories={categories}
+                           onSave={(item) => addMenuItem(item)}
+                           onCancel={() => setIsAddingItem(false)}
+                        />
+                     )}
+                     
+                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {menuItems.map(item => (
+                           <motion.div key={item.id} className="card p-6 bg-white shadow-lg border border-black/5">
+                              <img src={item.image} alt={item.name} className="w-full h-32 object-cover rounded-lg mb-4" />
+                              <div className="mb-4">
+                                 <h5 className="text-lg font-bold mb-1">{item.name}</h5>
+                                 <p className="text-sm text-gray-600 mb-2">{item.description}</p>
+                                 <div className="flex justify-between items-center mb-2">
+                                    <span className="text-[var(--secondary)] font-bold">₹{item.price}</span>
+                                    <span className="text-xs bg-gray-100 px-2 py-1 rounded">{item.category}</span>
+                                 </div>
+                                 <div className="flex items-center text-sm text-gray-500">
+                                    <Star size={12} className="fill-[var(--secondary)]" /> {item.rating}
+                                 </div>
+                              </div>
+                              <div className="flex gap-2">
+                                 <button 
+                                    onClick={() => setEditingItem(item)}
+                                    className="flex-1 btn bg-near-black text-white py-2 text-xs"
+                                 >
+                                    Edit
+                                 </button>
+                                 <button 
+                                    onClick={() => deleteMenuItem(item.id)}
+                                    className="flex-1 btn bg-red-500 text-white py-2 text-xs"
+                                 >
+                                    Delete
+                                 </button>
+                              </div>
+                           </motion.div>
+                        ))}
+                     </div>
+                  </div>
+                  
+                  {/* Edit Modal */}
+                  {editingItem && (
+                     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                        <div className="card p-8 bg-white shadow-2xl rounded-[32px] max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                           <h4 className="text-2xl font-bold mb-6">Edit Item</h4>
+                           <MenuItemForm 
+                              categories={categories}
+                              initialItem={editingItem}
+                              onSave={(item) => updateMenuItem(editingItem.id, { ...editingItem, ...item })}
+                              onCancel={() => setEditingItem(null)}
+                           />
+                        </div>
+                     </div>
+                  )}
                </div>
             ) : adminTab === 'tables' ? (
                <div className="max-w-2xl mx-auto text-center px-4 md:px-0 pb-32 md:pb-40">
@@ -1016,7 +1204,7 @@ export default function App() {
 
       {/* --- Unified Floating Nav Pill for Staff --- */}
       {view === 'admin' && (
-        <div className="fixed bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 z-[100] flex justify-center w-[95%] max-w-[600px]">
+        <div className="fixed bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 z-[100] flex justify-center w-[95%] max-w-[700px]">
            <nav className="vitreous-nav reveal" onMouseMove={(e) => {
               const rect = e.currentTarget.getBoundingClientRect();
               const x = ((e.clientX - rect.left) / rect.width) * 100;
@@ -1033,11 +1221,137 @@ export default function App() {
                   <button onClick={() => setAdminTab('manager')} className={`nav-link px-4 sm:px-6 ${adminTab === 'manager' ? 'active' : ''}`}><BarChart3 size={20} /></button>
                   <button onClick={() => setAdminTab('kitchen')} className={`nav-link px-4 sm:px-6 ${adminTab === 'kitchen' ? 'active' : ''}`}><Utensils size={20} /></button>
                   <button onClick={() => setAdminTab('waiter')} className={`nav-link px-4 sm:px-6 ${adminTab === 'waiter' ? 'active' : ''}`}><ClipboardList size={20} /></button>
+                  <button onClick={() => setAdminTab('menu')} className={`nav-link px-4 sm:px-6 ${adminTab === 'menu' ? 'active' : ''}`}><Coffee size={20} /></button>
                   <button onClick={() => setAdminTab('tables')} className={`nav-link px-4 sm:px-6 ${adminTab === 'tables' ? 'active' : ''}`}><QrCode size={20} /></button>
               </div>
            </nav>
         </div>
       )}
     </div>
+  );
+}
+
+// Menu Item Form Component
+interface MenuItemFormProps {
+  categories: string[];
+  initialItem?: MenuItem;
+  onSave: (item: Omit<MenuItem, 'id'>) => void;
+  onCancel: () => void;
+}
+
+function MenuItemForm({ categories, initialItem, onSave, onCancel }: MenuItemFormProps) {
+  const [formData, setFormData] = useState<Omit<MenuItem, 'id'>>(
+    initialItem || {
+      name: '',
+      description: '',
+      price: 0,
+      category: categories[0] || 'Coffee',
+      image: '',
+      rating: 4.5,
+    }
+  );
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (formData.name && formData.price && formData.category) {
+      onSave(formData);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div>
+        <label className="block text-sm font-bold mb-2">Item Name *</label>
+        <input 
+          type="text"
+          value={formData.name}
+          onChange={(e) => setFormData({...formData, name: e.target.value})}
+          className="w-full px-4 py-2 border border-black/10 rounded-lg focus:outline-none focus:border-[var(--secondary)]"
+          required
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-bold mb-2">Description</label>
+        <textarea 
+          value={formData.description}
+          onChange={(e) => setFormData({...formData, description: e.target.value})}
+          className="w-full px-4 py-2 border border-black/10 rounded-lg focus:outline-none focus:border-[var(--secondary)] h-24 resize-none"
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-bold mb-2">Price (₹) *</label>
+          <input 
+            type="number"
+            value={formData.price}
+            onChange={(e) => setFormData({...formData, price: parseFloat(e.target.value) || 0})}
+            className="w-full px-4 py-2 border border-black/10 rounded-lg focus:outline-none focus:border-[var(--secondary)]"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-bold mb-2">Rating</label>
+          <input 
+            type="number"
+            min="0"
+            max="5"
+            step="0.1"
+            value={formData.rating}
+            onChange={(e) => setFormData({...formData, rating: parseFloat(e.target.value) || 4.5})}
+            className="w-full px-4 py-2 border border-black/10 rounded-lg focus:outline-none focus:border-[var(--secondary)]"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-bold mb-2">Category *</label>
+        <select 
+          value={formData.category}
+          onChange={(e) => setFormData({...formData, category: e.target.value})}
+          className="w-full px-4 py-2 border border-black/10 rounded-lg focus:outline-none focus:border-[var(--secondary)]"
+          required
+        >
+          {categories.map(cat => (
+            <option key={cat} value={cat}>{cat}</option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label className="block text-sm font-bold mb-2">Image URL</label>
+        <input 
+          type="url"
+          value={formData.image}
+          onChange={(e) => setFormData({...formData, image: e.target.value})}
+          className="w-full px-4 py-2 border border-black/10 rounded-lg focus:outline-none focus:border-[var(--secondary)]"
+          placeholder="https://images.unsplash.com/..."
+        />
+      </div>
+
+      {formData.image && (
+        <div className="mt-4">
+          <img src={formData.image} alt="Preview" className="w-full h-40 object-cover rounded-lg" />
+        </div>
+      )}
+
+      <div className="flex gap-4 pt-6">
+        <button 
+          type="button"
+          onClick={onCancel}
+          className="flex-1 btn border-2 border-black px-4 py-3 text-black"
+        >
+          Cancel
+        </button>
+        <button 
+          type="submit"
+          className="flex-1 btn bg-near-black text-white py-3"
+        >
+          {initialItem ? 'Update Item' : 'Add Item'}
+        </button>
+      </div>
+    </form>
   );
 }
